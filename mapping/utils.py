@@ -35,7 +35,6 @@ def map_process_to_sortedbam(map_process, out_fpath, key='coordinate',
     sort = Popen(cmd, stdin=map_process.stdout, stderr=stderr)
     map_process.stdout.close()
     sort.communicate()
-
     if map_process.returncode:
         raise RuntimeError('Error in mapping process')
 
