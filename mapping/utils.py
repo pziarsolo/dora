@@ -1,8 +1,9 @@
 import os
+import multiprocessing as mp
+from copy import copy
 from tempfile import NamedTemporaryFile, gettempdir
 from subprocess import Popen
-import multiprocessing as mp
-import copy
+from pathlib import Path
 
 
 def get_num_threads(threads):
@@ -56,22 +57,21 @@ def run_multiprocesses(func, confs, num_processes, log_fhand):
         log_fhand.flush()
 
 
-def generate_bwa_confs_from_project(project_path, bwa_index, do_duplicates,
-                                    do_downgrade_edges, tmp_dir='tmp',
-                                    read_dir='reads/clean', threads=1,
-                                    out_dir='mapping/bams'):
+def generate_bwa_confs_from_project(samples_fpath, bwa_index, do_duplicates,
+                                    do_downgrade_edges, tmp_dir, read_dir,
+                                    out_dir, threads=1):
     confs = []
-    tmp_dirpath = project_path.joinpath(tmp_dir)
+    tmp_dirpath = Path(tmp_dir)
     skeleton = {'threads': threads, 'do_downgrade_edges': do_downgrade_edges,
                 'do_duplicates': do_duplicates, 'tmpdir': str(tmp_dirpath),
                 'index': bwa_index}
-    out_dirpath = project_path.joinpath(out_dir)
-    read_dirpath = project_path.joinpath(read_dir)
+    out_dirpath = Path(out_dir)
+    read_dirpath = Path(read_dir)
 
-    sample_path = project_path.joinpath('samples.txt')
+    sample_path = Path(samples_fpath)
 
     for line in open(str(sample_path)):
-        conf = copy.copy(skeleton)
+        conf = copy(skeleton)
         line = line.strip()
         items = line.split()
         library = items[0]

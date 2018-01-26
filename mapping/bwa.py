@@ -1,6 +1,6 @@
 import sys
 from pathlib import Path
-from subprocess import PIPE, Popen, run
+from subprocess import PIPE, Popen
 from tempfile import gettempdir, NamedTemporaryFile
 
 from mapping.bam import mark_duplicates, downgrade_read_edges, index_bam
