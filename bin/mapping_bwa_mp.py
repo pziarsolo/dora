@@ -1,4 +1,4 @@
-# /usr/bin/env python
+#!/usr/bin/env python
 import sys
 import os
 
@@ -30,3 +30,7 @@ def main():
                                             read_dir=read_dir, threads=threads,
                                             out_dir=out_dir)
     run_multiprocesses(map_mp_bwamem, confs, processes, log_fhand)
+
+
+if __name__ == '__main__':
+    main()
