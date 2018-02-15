@@ -58,7 +58,7 @@ def map_mp_bwamem(conf):
     if map_out_is_tmp:
         bam_fhand = NamedTemporaryFile(suffix='.bwa.bam', dir=tempdir)
     else:
-        bam_fhand = open(out_path, 'w')
+        bam_fhand = out_path.open('w')
     bwa_process = map_with_bwamem(**bwa_conf)
     try:
         map_process_to_sortedbam(bwa_process, bam_fhand.name,
@@ -79,7 +79,7 @@ def map_mp_bwamem(conf):
         if duplicates_out_is_tmp:
             dup_fhand = NamedTemporaryFile(suffix='.dup.bam', dir=tempdir)
         else:
-            dup_fhand = open(out_path, 'w')
+            dup_fhand = out_path.open('w')
         try:
             mark_duplicates(out_fhand.name, dup_fhand.name, stderr_fhand=stderr_fhand)
         except RuntimeError:
@@ -92,7 +92,7 @@ def map_mp_bwamem(conf):
         used_fhands.append(dup_fhand)
 
     if do_downgrade_edges:
-        downgrade_fhand = open(out_path, 'w')
+        downgrade_fhand = out_path.open('w')
         downgrade_read_edges(out_fhand.name, downgrade_fhand.name, 3)
 
         out_fhand = downgrade_fhand

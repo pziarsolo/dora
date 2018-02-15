@@ -63,8 +63,8 @@ def generate_bwa_confs_from_project(samples_fpath, bwa_index, do_duplicates,
     confs = []
     tmp_dirpath = Path(tmp_dir)
     skeleton = {'threads': threads, 'do_downgrade_edges': do_downgrade_edges,
-                'do_duplicates': do_duplicates, 'tmpdir': str(tmp_dirpath),
-                'index': bwa_index}
+                'do_duplicates': do_duplicates, 'index': bwa_index,
+                'tmpdir': str(tmp_dirpath.absolute())}
     out_dirpath = Path(out_dir)
     read_dirpath = Path(read_dir)
 
@@ -81,13 +81,14 @@ def generate_bwa_confs_from_project(samples_fpath, bwa_index, do_duplicates,
             sample = library
         read1_path = read_dirpath.joinpath('{}_1.fastq.gz'.format(library))
         read2_path = read_dirpath.joinpath('{}_2.fastq.gz'.format(library))
-        out_path = out_dirpath('{}.bam'.format(library))
-        conf['read1_path'] = read1_path
-        conf['read2_path'] = read2_path
-        conf['out_path'] = out_path
+        out_path = out_dirpath.joinpath('{}.bam'.format(library))
+        conf['read1_fpath'] = str(read1_path.absolute())
+        conf['read2_fpath'] = str(read2_path.absolute())
+        conf['out_fpath'] = str(out_path.absolute())
         conf['sample'] = sample
         conf['library'] = library
         confs.append(conf)
+
     return confs
 
 
