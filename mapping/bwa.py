@@ -23,6 +23,8 @@ def map_mp_bwamem(conf):
     do_duplicates = conf.get('do_duplicates', False)
     do_downgrade_edges = conf.get('do_downgrade_edge', True)
 
+    Path(tempdir).mkdir(exist_ok=True)
+
     if not read1_path.exists():
         msg = '{}: reads not available\n'.format(library)
         sys.stdout.write(msg)
