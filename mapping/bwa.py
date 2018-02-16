@@ -65,10 +65,10 @@ def map_mp_bwamem(conf):
                                  stderr_fhand=stderr_fhand,
                                  tempdir=tempdir)
     except RuntimeError:
-        msg = '{}: error mapping\n'.format(sample)
+        msg = '{}: error mapping\n'.format(library)
         sys.stderr.write(msg)
         remove_fhand(bam_fhand)
-        return True, sample, msg
+        return {'fail': True, 'sample': library, 'error_msg': msg}
     finally:
         bwa_process.wait()
     out_fhand = bam_fhand
