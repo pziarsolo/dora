@@ -7,7 +7,7 @@ import shutil
 
 LEFT_DOWNGRADED_TAG = 'dl'
 RIGTH_DOWNGRADED_TAG = 'dr'
-QUAL_TO_SUBSTRACT = 30
+QUAL_TO_SUBSTRACT = 60
 
 
 def index_bam(path):
@@ -15,7 +15,7 @@ def index_bam(path):
     index(str(path))
 
 
-def downgrade_read_edges(in_fpath, out_fpath, size,
+def downgrade_read_edges(in_fpath, out_fpath, read_start_size, read_end_size,
                          qual_to_substract=QUAL_TO_SUBSTRACT):
     in_sam = AlignmentFile(in_fpath)
     out_sam = AlignmentFile(out_fpath, 'wb', template=in_sam)
@@ -24,14 +24,20 @@ def downgrade_read_edges(in_fpath, out_fpath, size,
                 aligned_read.has_tag(RIGTH_DOWNGRADED_TAG)):
             raise RuntimeError('Edge qualities already downgraded\n')
 
-        _downgrade_edge_qualities(aligned_read, size,
+        _downgrade_edge_qualities(aligned_read, read_start_size, read_end_size,
                                   qual_to_substract=qual_to_substract)
         out_sam.write(aligned_read)
 
 
-def _downgrade_edge_qualities(aligned_read, size, qual_to_substract):
-    left_limit = aligned_read.qstart + size
-    right_limit = aligned_read.qend - size
+def _downgrade_edge_qualities(aligned_read, read_start_size, read_end_size,
+                              qual_to_substract):
+    is_reversed = bool(aligned_read.flag & 16)
+    if is_reversed:
+        right_limit = aligned_read.qstart + read_start_size
+        left_limit = aligned_read.qend - read_end_size
+    else:
+        left_limit = aligned_read.qstart + read_start_size
+        right_limit = aligned_read.qend - read_end_size
     quals = list(aligned_read.query_qualities)
 
     if left_limit >= right_limit:

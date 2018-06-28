@@ -17,7 +17,7 @@ def main():
     out_dir = os.path.join(project_path, 'mapping/bams')
     tmp_dir = os.path.join(project_path, 'tmp')
     samples_path = os.path.join(project_path, 'samples.txt')
-
+    downgrade_edges_conf = {'read_start_size': 3, 'read_end_size': 3}
     bwa_index = '/home/jope/genomes/tomato/S_lycopersicum_chromosomes.2.50.fa'
     log_fhand = sys.stdout
     if MARK_DUPLICATES is None or DOWNGRADE_EDGES is None:
@@ -28,6 +28,7 @@ def main():
                                             do_downgrade_edges=DOWNGRADE_EDGES,
                                             tmp_dir=tmp_dir,
                                             read_dir=read_dir, threads=threads,
+                                            downgrade_edges_conf=downgrade_edges_conf,
                                             out_dir=out_dir)
     run_multiprocesses(map_mp_bwamem, confs, processes, log_fhand)
 

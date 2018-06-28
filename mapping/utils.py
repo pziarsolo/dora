@@ -1,6 +1,6 @@
 import os
 import multiprocessing as mp
-from copy import copy
+from copy import deepcopy
 from tempfile import NamedTemporaryFile, gettempdir
 from subprocess import Popen
 from pathlib import Path
@@ -59,19 +59,20 @@ def run_multiprocesses(func, confs, num_processes, log_fhand):
 
 def generate_bwa_confs_from_project(samples_fpath, bwa_index, do_duplicates,
                                     do_downgrade_edges, tmp_dir, read_dir,
-                                    out_dir, threads=1):
+                                    out_dir, downgrade_edges_conf, threads=1):
     confs = []
     tmp_dirpath = Path(tmp_dir)
     skeleton = {'threads': threads, 'do_downgrade_edges': do_downgrade_edges,
                 'do_duplicates': do_duplicates, 'index': bwa_index,
-                'tmpdir': str(tmp_dirpath.absolute())}
+                'tmpdir': str(tmp_dirpath.absolute()),
+                'downgrade_edges_conf': downgrade_edges_conf}
     out_dirpath = Path(out_dir)
     read_dirpath = Path(read_dir)
 
     sample_path = Path(samples_fpath)
 
     for line in open(str(sample_path)):
-        conf = copy(skeleton)
+        conf = deepcopy(skeleton)
         line = line.strip()
         items = line.split()
         library = items[0]
