@@ -75,19 +75,28 @@ def generate_bwa_confs_from_project(samples_fpath, bwa_index, do_duplicates,
         conf = deepcopy(skeleton)
         line = line.strip()
         items = line.split()
-        library = items[0]
-        try:
+        if len(items) == 3:
+            read_group = items[0]
+            library = items[1]
+            sample = items[2]
+        elif len(items) == 2:
+            read_group = items[0]
+            library = items[0]
             sample = items[1]
-        except IndexError:
-            sample = library
-        read1_path = read_dirpath.joinpath('{}_1.fastq.gz'.format(library))
-        read2_path = read_dirpath.joinpath('{}_2.fastq.gz'.format(library))
-        out_path = out_dirpath.joinpath('{}.bam'.format(library))
+        elif len(items) == 1:
+            read_group = items[0]
+            sample = items[0]
+            library = items[0]
+
+        read1_path = read_dirpath.joinpath('{}_1.fastq.gz'.format(read_group))
+        read2_path = read_dirpath.joinpath('{}_2.fastq.gz'.format(read_group))
+        out_path = out_dirpath.joinpath('{}.bam'.format(read_group))
         conf['read1_fpath'] = str(read1_path.absolute())
         conf['read2_fpath'] = str(read2_path.absolute())
         conf['out_fpath'] = str(out_path.absolute())
         conf['sample'] = sample
         conf['library'] = library
+        conf['read_group'] = read_group
         confs.append(conf)
 
     return confs

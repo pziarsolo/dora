@@ -11,6 +11,7 @@ from mapping.utils import (get_num_threads, map_process_to_sortedbam,
 def map_mp_bwamem(conf):
     sample = conf.get('sample')
     library = conf.get('library', sample)
+    read_group = conf.get('read_group', library)
     read1_path = Path(conf.get('read1_fpath'))
     read2_path = conf.get('read2_fpath', None)
     if read2_path:
@@ -27,16 +28,16 @@ def map_mp_bwamem(conf):
     Path(tempdir).mkdir(exist_ok=True)
 
     if not read1_path.exists():
-        msg = '{}: reads not available\n'.format(library)
+        msg = '{}: reads not available\n'.format(read_group)
         sys.stdout.write(msg)
-        return {'fail': True, 'sample': library, 'error_msg': msg}
+        return {'fail': True, 'sample': read_group, 'error_msg': msg}
 
     if out_path.exists():
         msg = '{} already mapped\n'.format(out_path)
         sys.stdout.write(msg)
-        return {'fail': True, 'sample': sample, 'error_msg': msg}
+        return {'fail': True, 'sample': read_group, 'error_msg': msg}
 
-    readgroup = {'ID': library, 'LB': library, 'SM': sample,
+    readgroup = {'ID': read_group, 'LB': library, 'SM': sample,
                  'PL': 'illumina'}
 
     stderr_fhand = open(str(out_path.with_suffix('.stderr')), 'w')
@@ -71,7 +72,7 @@ def map_mp_bwamem(conf):
         msg = '{}: error mapping\n'.format(library)
         sys.stderr.write(msg)
         remove_fhand(bam_fhand)
-        return {'fail': True, 'sample': library, 'error_msg': msg}
+        return {'fail': True, 'sample': read_group, 'error_msg': msg}
     finally:
         bwa_process.wait()
     out_fhand = bam_fhand
@@ -90,7 +91,7 @@ def map_mp_bwamem(conf):
             sys.stderr.write(msg)
             remove_fhand(bam_fhand)
             remove_fhand(dup_fhand)
-            return {'fail': True, 'sample': library, 'error_msg': msg}
+            return {'fail': True, 'sample': read_group, 'error_msg': msg}
         out_fhand = dup_fhand
         used_fhands.append(dup_fhand)
 
@@ -110,7 +111,7 @@ def map_mp_bwamem(conf):
         else:
             fhand.close()
 
-    return {'fail': False, 'sample': library, 'error_msg': 'OK'}
+    return {'fail': False, 'sample': read_group, 'error_msg': 'OK'}
 
 
 def map_with_bwamem(index_fpath, unpaired_path=None, paired_paths=None,
