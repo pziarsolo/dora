@@ -4,6 +4,7 @@ from tempfile import NamedTemporaryFile
 import subprocess
 from subprocess import CalledProcessError
 import shutil
+import sys
 
 LEFT_DOWNGRADED_TAG = 'dl'
 RIGTH_DOWNGRADED_TAG = 'dr'
@@ -31,17 +32,19 @@ def downgrade_read_edges(in_fpath, out_fpath, read_start_size, read_end_size,
 
 def _downgrade_edge_qualities(aligned_read, read_start_size, read_end_size,
                               qual_to_substract):
+    
     is_reversed = bool(aligned_read.flag & 16)
     if is_reversed:
-        right_limit = aligned_read.qstart + read_start_size
-        left_limit = aligned_read.qend - read_end_size
+        right_limit = aligned_read.query_alignment_end - read_start_size 
+        left_limit = aligned_read.query_alignment_start + read_end_size
     else:
-        left_limit = aligned_read.qstart + read_start_size
-        right_limit = aligned_read.qend - read_end_size
-    quals = list(aligned_read.query_qualities)
-
+        left_limit = aligned_read.query_alignment_start + read_start_size
+        right_limit = aligned_read.query_alignment_end - read_end_size  
     if left_limit >= right_limit:
         right_limit = left_limit + 1
+    quals = list(aligned_read.query_qualities)
+
+    
 
     left_quals = quals[:left_limit]
     right_quals = quals[right_limit:]
@@ -55,12 +58,18 @@ def _downgrade_edge_qualities(aligned_read, read_start_size, read_end_size,
     downgraded_left_quals = list(map(minus, left_quals))
     downgraded_right_quals = list(map(minus, right_quals))
 
+
     new_quals = downgraded_left_quals
     new_quals.extend(quals[left_limit:right_limit])
     new_quals.extend(downgraded_right_quals)
+
     try:
         assert len(quals) == len(new_quals)
     except AssertionError:
+        print("Is reversed:", is_reversed)
+        print(aligned_read.query_alignment_start,
+              aligned_read.query_alignment_end)
+        print(read_start_size, read_end_size)
         print(left_limit, right_limit)
         print(left_quals, downgraded_left_quals)
         print(right_quals, downgraded_right_quals)
