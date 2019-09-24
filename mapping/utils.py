@@ -60,7 +60,7 @@ def run_multiprocesses(func, confs, num_processes, log_fhand):
 def generate_bwa_confs_from_project(samples_fpath, bwa_index, do_duplicates,
                                     do_downgrade_edges, tmp_dir, read_dir,
                                     out_dir, downgrade_edges_conf, threads=1,
-                                    pair_def_format=''):
+                                    pair_def_format='', paired=True):
     confs = []
     tmp_dirpath = Path(tmp_dir)
     skeleton = {'threads': threads, 'do_downgrade_edges': do_downgrade_edges,
@@ -88,12 +88,15 @@ def generate_bwa_confs_from_project(samples_fpath, bwa_index, do_duplicates,
             read_group = items[0]
             sample = items[0]
             library = items[0]
-
-        read1_path = read_dirpath.joinpath('{}_{}1.fastq.gz'.format(read_group, pair_def_format))
-        read2_path = read_dirpath.joinpath('{}_{}2.fastq.gz'.format(read_group, pair_def_format))
+        if paired:
+            read1_path = read_dirpath.joinpath('{}_{}1.fastq.gz'.format(read_group, pair_def_format))
+            read2_path = read_dirpath.joinpath('{}_{}2.fastq.gz'.format(read_group, pair_def_format))
+            conf['read1_fpath'] = str(read1_path.absolute())
+            conf['read2_fpath'] = str(read2_path.absolute())
+        else:
+            read1_path = read_dirpath.joinpath('{}.fastq.gz'.format(read_group))
+            conf['read1_fpath'] = str(read1_path.absolute())
         out_path = out_dirpath.joinpath('{}.bam'.format(read_group))
-        conf['read1_fpath'] = str(read1_path.absolute())
-        conf['read2_fpath'] = str(read2_path.absolute())
         conf['out_fpath'] = str(out_path.absolute())
         conf['sample'] = sample
         conf['library'] = library
