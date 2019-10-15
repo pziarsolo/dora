@@ -1,4 +1,3 @@
-import sys
 from pathlib import Path
 from subprocess import PIPE, Popen
 from tempfile import gettempdir, NamedTemporaryFile
@@ -30,12 +29,12 @@ def map_mp_bwamem(conf):
 
     if not read1_path.exists():
         msg = '{}: reads not available'.format(read_group)
-        #sys.stdout.write(msg)
+        # sys.stdout.write(msg)
         return {'fail': True, 'sample': read_group, 'error_msg': msg}
 
     if out_path.exists():
         msg = '{} already mapped'.format(out_path)
-        #sys.stdout.write(msg)
+        # sys.stdout.write(msg)
         return {'fail': True, 'sample': read_group, 'error_msg': msg}
 
     readgroup = {'ID': read_group, 'LB': library, 'SM': sample,
@@ -71,7 +70,7 @@ def map_mp_bwamem(conf):
                                  tempdir=tempdir)
     except RuntimeError:
         msg = '{}: error mapping'.format(library)
-        #sys.stderr.write(msg)
+        # sys.stderr.write(msg)
         remove_fhand(bam_fhand)
         return {'fail': True, 'sample': read_group, 'error_msg': msg}
     finally:
@@ -89,7 +88,7 @@ def map_mp_bwamem(conf):
             mark_duplicates(out_fhand.name, dup_fhand.name, stderr_fhand=stderr_fhand)
         except RuntimeError:
             msg = '{}: error marking duplicates\n'.format(sample)
-            #sys.stderr.write(msg)
+            # sys.stderr.write(msg)
             remove_fhand(bam_fhand)
             remove_fhand(dup_fhand)
             return {'fail': True, 'sample': read_group, 'error_msg': msg}
