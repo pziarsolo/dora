@@ -24,17 +24,18 @@ def map_mp_bwamem(conf):
     do_duplicates = conf.get('do_duplicates', False)
     do_downgrade_edges = conf.get('do_downgrade_edge', True)
     downgrade_edges_conf = conf.get('downgrade_edges_conf', None)
+    do_csi_index = conf.get('do_csi_index', False)
 
     Path(tempdir).mkdir(exist_ok=True)
 
     if not read1_path.exists():
-        msg = '{}: reads not available\n'.format(read_group)
-        sys.stdout.write(msg)
+        msg = '{}: reads not available'.format(read_group)
+        #sys.stdout.write(msg)
         return {'fail': True, 'sample': read_group, 'error_msg': msg}
 
     if out_path.exists():
-        msg = '{} already mapped\n'.format(out_path)
-        sys.stdout.write(msg)
+        msg = '{} already mapped'.format(out_path)
+        #sys.stdout.write(msg)
         return {'fail': True, 'sample': read_group, 'error_msg': msg}
 
     readgroup = {'ID': read_group, 'LB': library, 'SM': sample,
@@ -69,8 +70,8 @@ def map_mp_bwamem(conf):
                                  stderr_fhand=stderr_fhand,
                                  tempdir=tempdir)
     except RuntimeError:
-        msg = '{}: error mapping\n'.format(library)
-        sys.stderr.write(msg)
+        msg = '{}: error mapping'.format(library)
+        #sys.stderr.write(msg)
         remove_fhand(bam_fhand)
         return {'fail': True, 'sample': read_group, 'error_msg': msg}
     finally:
@@ -88,7 +89,7 @@ def map_mp_bwamem(conf):
             mark_duplicates(out_fhand.name, dup_fhand.name, stderr_fhand=stderr_fhand)
         except RuntimeError:
             msg = '{}: error marking duplicates\n'.format(sample)
-            sys.stderr.write(msg)
+            #sys.stderr.write(msg)
             remove_fhand(bam_fhand)
             remove_fhand(dup_fhand)
             return {'fail': True, 'sample': read_group, 'error_msg': msg}
@@ -103,7 +104,7 @@ def map_mp_bwamem(conf):
         out_fhand = downgrade_fhand
         used_fhands.append(downgrade_fhand)
 
-    index_bam(out_fhand.name)
+    index_bam(out_fhand.name, do_csi_index=do_csi_index)
     stderr_fhand.close()
     for fhand in used_fhands:
         if fhand.name != out_fhand.name:

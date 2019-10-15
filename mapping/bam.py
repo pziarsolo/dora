@@ -10,9 +10,14 @@ RIGTH_DOWNGRADED_TAG = 'dr'
 QUAL_TO_SUBSTRACT = 60
 
 
-def index_bam(path):
+def index_bam(path, do_csi_index=False):
     'It indexes a bam file'
-    index(str(path))
+    cmd = []
+    if do_csi_index:
+        cmd.append('-c')
+    cmd.append(path)
+
+    index(*cmd)
 
 
 def downgrade_read_edges(in_fpath, out_fpath, read_start_size, read_end_size,

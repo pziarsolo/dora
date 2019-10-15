@@ -60,12 +60,13 @@ def run_multiprocesses(func, confs, num_processes, log_fhand):
 def generate_bwa_confs_from_project(samples_fpath, bwa_index, do_duplicates,
                                     do_downgrade_edges, tmp_dir, read_dir,
                                     out_dir, downgrade_edges_conf, threads=1,
-                                    pair_def_format='', paired=True):
+                                    pair_def_format='', paired=True,
+                                    do_csi_index=False):
     confs = []
     tmp_dirpath = Path(tmp_dir)
     skeleton = {'threads': threads, 'do_downgrade_edges': do_downgrade_edges,
                 'do_duplicates': do_duplicates, 'index': bwa_index,
-                'tmpdir': str(tmp_dirpath.absolute()),
+                'tmpdir': str(tmp_dirpath.absolute()), 'do_csi_index': do_csi_index,
                 'downgrade_edges_conf': downgrade_edges_conf}
     out_dirpath = Path(out_dir)
     read_dirpath = Path(read_dir)
