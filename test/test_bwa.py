@@ -34,6 +34,7 @@ class BwaTest(unittest.TestCase):
             conf['out_fpath'] = out_tmp_fpath
             conf['sample'] = 'test'
             conf['do_duplicates'] = True
+            conf['do_downgrade_edges'] = False
             result = map_mp_bwamem(conf)
             assert result == {'fail': False, 'sample': 'test', 'error_msg': 'OK'}
             out = run(['samtools', 'view', '-h', out_tmp_fpath], stdout=PIPE)
@@ -52,6 +53,7 @@ class BwaTest(unittest.TestCase):
             conf['out_fpath'] = out_tmp_fpath
             conf['sample'] = 'test'
             conf['do_duplicates'] = False
+            conf['do_downgrade_edges'] = False
             result = map_mp_bwamem(conf)
             assert result == {'fail': False, 'sample': 'test', 'error_msg': 'OK'}
             out = run(['samtools', 'view', '-h', out_tmp_fpath], stdout=PIPE)

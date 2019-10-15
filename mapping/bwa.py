@@ -22,7 +22,7 @@ def map_mp_bwamem(conf):
     threads = get_num_threads(conf.get('threads', None))
     interleave = conf.get('interleave', False)
     do_duplicates = conf.get('do_duplicates', False)
-    do_downgrade_edges = conf.get('do_downgrade_edge', True)
+    do_downgrade_edges = conf.get('do_downgrade_edges', True)
     downgrade_edges_conf = conf.get('downgrade_edges_conf', None)
 
     Path(tempdir).mkdir(exist_ok=True)
@@ -97,6 +97,8 @@ def map_mp_bwamem(conf):
 
     if do_downgrade_edges:
         downgrade_fhand = out_path.open('w')
+        if downgrade_edges_conf is None:
+            downgrade_edges_conf = {}
         downgrade_read_edges(out_fhand.name, downgrade_fhand.name,
                              **downgrade_edges_conf)
 
