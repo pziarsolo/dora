@@ -134,10 +134,10 @@ def _mark_duplicates(in_fpath, out_fpath, metric_fpath, stderr_fhand):
     if metric_fpath is None:
         metric_fpath = '/dev/null'
 
-#     cmd = ['picard-tools', 'MarkDuplicates', 'VALIDATION_STRINGENCY=LENIENT',
-#            'M={}'.format(metric_fpath), 'INPUT={}'.format(in_fpath),
-#            'OUTPUT={}'.format(out_fpath)]
-    cmd = ['samtools', 'markdup', in_fpath, out_fpath]
+    cmd = ['picard-tools', 'MarkDuplicates', 'VALIDATION_STRINGENCY=LENIENT',
+           'M={}'.format(metric_fpath), 'INPUT={}'.format(in_fpath),
+           'OUTPUT={}'.format(out_fpath)]
+#     cmd = ['samtools', 'markdup', in_fpath, out_fpath]
     failed = False
     try:
         subprocess.run(cmd, stderr=stderr_fhand, stdout=stderr_fhand)
