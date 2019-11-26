@@ -15,7 +15,7 @@ def index_bam(path, do_csi_index=False):
     cmd = []
     if do_csi_index:
         cmd.append('-c')
-    cmd.append(path)
+    cmd.append(str(path))
 
     index(*cmd)
 
