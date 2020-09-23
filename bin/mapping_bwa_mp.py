@@ -30,7 +30,7 @@ def main():
                                             tmp_dir=tmp_dir,
                                             read_dir=read_dir, threads=threads,
                                             downgrade_edges_conf=downgrade_edges_conf,
-                                            out_dir=out_dir,
+                                            out_dir=out_dir, paired=True,
                                             pair_def_format=pair_def_format)
     run_multiprocesses(map_mp_bwamem, confs, processes, log_fhand)
 
