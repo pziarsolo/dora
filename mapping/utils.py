@@ -59,7 +59,7 @@ def run_multiprocesses(func, confs, num_processes, log_fhand):
         log_fhand.flush()
 
     if some_fail:
-        log_fhand = 'ERROR: One or more mapping process hace failed\n'
+        log_fhand.write('ERROR: One or more mapping process hace failed\n')
 
 
 def generate_bwa_confs_from_project(samples_fpath, bwa_index, do_duplicates,

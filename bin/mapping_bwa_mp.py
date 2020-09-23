@@ -12,6 +12,7 @@ DOWNGRADE_EDGES = None
 def main():
     threads = 20
     processes = 6
+    paired = True
     project_path = sys.argv[1]
     read_dir = os.path.join(project_path, 'reads/clean')
     out_dir = os.path.join(project_path, 'mapping/bams')
@@ -30,7 +31,7 @@ def main():
                                             tmp_dir=tmp_dir,
                                             read_dir=read_dir, threads=threads,
                                             downgrade_edges_conf=downgrade_edges_conf,
-                                            out_dir=out_dir, paired=True,
+                                            out_dir=out_dir, paired=paired,
                                             pair_def_format=pair_def_format)
     run_multiprocesses(map_mp_bwamem, confs, processes, log_fhand)
 
