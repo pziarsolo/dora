@@ -82,6 +82,7 @@ def generate_bwa_confs_from_project(samples_fpath, bwa_index, do_duplicates,
         conf = deepcopy(skeleton)
         line = line.strip()
         items = line.split()
+        
         if len(items) == 3:
             read_group = items[0]
             library = items[1]
@@ -94,6 +95,9 @@ def generate_bwa_confs_from_project(samples_fpath, bwa_index, do_duplicates,
             read_group = items[0]
             sample = items[0]
             library = items[0]
+        else:
+            raise RuntimeError('There is some problem with the samples file')
+        
         if paired:
             read1_path = read_dirpath.joinpath('{}_{}1.fastq.gz'.format(read_group, pair_def_format))
             read2_path = read_dirpath.joinpath('{}_{}2.fastq.gz'.format(read_group, pair_def_format))
@@ -102,6 +106,7 @@ def generate_bwa_confs_from_project(samples_fpath, bwa_index, do_duplicates,
         else:
             read1_path = read_dirpath.joinpath('{}.fastq.gz'.format(read_group))
             conf['read1_fpath'] = str(read1_path.absolute())
+
         out_path = out_dirpath.joinpath('{}.bam'.format(read_group))
         conf['out_fpath'] = str(out_path.absolute())
         conf['sample'] = sample
