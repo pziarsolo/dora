@@ -46,15 +46,20 @@ def map_process_to_sortedbam(map_process, out_fpath, key='coordinate',
 def run_multiprocesses(func, confs, num_processes, log_fhand):
     pool = mp.Pool(processes=num_processes)
     results = pool.imap_unordered(func, confs)
+    some_fail = False
     for result in results:
         failed = result['fail']
         sample = result['sample']
         msg = result['error_msg']
         if failed:
             log_fhand.write('ERROR: {}, {}\n'.format(sample, msg))
+            some_fail = True
         else:
             log_fhand.write('OK: {}\n'.format(sample))
         log_fhand.flush()
+
+    if some_fail:
+        log_fhand = 'ERROR: One or more mapping process hace failed\n'
 
 
 def generate_bwa_confs_from_project(samples_fpath, bwa_index, do_duplicates,
