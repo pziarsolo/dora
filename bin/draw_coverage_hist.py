@@ -6,7 +6,7 @@ import argparse
 import sys
 from collections import Counter
 
-from mapping.plot import draw_histogram_in_fhand
+from dora.plot import draw_histogram_in_fhand
 
 COVERAGE_RANGE = (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 40, 50, 75, 100)
 PLOTS_PER_CHAR = 3
@@ -87,12 +87,11 @@ def run():
                          args['genome_size'])
 
 
-def write_coverage_stats(coverages, sample, out_fhand, genome_size,):
+def write_coverage_stats(coverages, sample, out_fhand, genome_size, ):
     stdout = 'Data for sample {}\n'.format(sample)
     stdout += '-------------------------------\n'
     stdout += 'Minimum coverage value: {}\n'.format(min(coverages.keys()))
     stdout += 'Maximum coverage value: {}\n'.format(max(coverages.keys()))
-#     stdout += 'Median value: {}\n'.format(coverages.median)
     out_fhand.write(stdout)
 
     limit_count = Counter()

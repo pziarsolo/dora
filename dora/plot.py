@@ -1,5 +1,6 @@
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+import seaborn as sns
 
 BAR = 'bar'
 LINE = 'line'
@@ -103,9 +104,9 @@ class HistogramPlotter(object):
             left_val = None
             right_val = None
             xticks_labels = []
-            for value in bin_limits:
+            for i, value in enumerate(bin_limits):
                 right_val = value
-                if left_val:
+                if left_val is not None:
                     xticks_label = (left_val + right_val) / 2.0
                     if xticks_label >= 10:
                         fmt = '%d'
@@ -115,6 +116,7 @@ class HistogramPlotter(object):
                         fmt = '%.1e'
                     xticks_label = fmt % xticks_label
                     xticks_labels.append(xticks_label)
+
                 left_val = right_val
 
             # we don't want to clutter the plot
@@ -153,7 +155,7 @@ class HistogramPlotter(object):
         counter_index = 0
         axes = []
         for plot_num in range(1, self.num_plots + 1):
-            # print num_rows, num_cols, plot_num
+            print(self.num_rows, self.num_cols, plot_num)
             axe = self.figure.add_subplot(self.num_rows, self.num_cols,
                                           plot_num)
             for _ in range(self.plots_per_chart):
@@ -181,7 +183,7 @@ class HistogramPlotter(object):
             if distrib_labels is not None:
                 axe.legend()
             axes.append(axe)
-
+        print(len(axes))
         return axes
 
 
@@ -294,3 +296,95 @@ def calculate_bin_edges(counter, min_, max_, n_bins=None):
     bin_span = distrib_span // n_bins
     bin_edges = [min_ + bin_ * bin_span for bin_ in range(n_bins + 1)]
     return bin_edges
+
+
+def draw_histogram_in_axe(counter, axe, kind=LINE, xmax=None, xmin=None,
+                          title=None, distrib_label=None, linestyle=None,
+                          ylimits=None, xlimits=None, xtickslabel_rotation=None,
+                          ylog_scale=False, xlabel=None, ylabel=None):
+    sns.set_theme(style="whitegrid", palette="pastel")
+    try:
+        distrib = calculate_distribution(counter, max_=xmax, min_=xmin)
+    except RuntimeError:
+        axe.set_title(title + ' (NO DATA)')
+        return axe
+    except AttributeError as error:
+        # if distributions is None
+        err_msg = "'NoneType' object has no attribute "
+        err_msg += "'calculate_distribution'"
+        if err_msg in error:
+            axe.set_title(title + ' (NO DATA)')
+            return axe
+        raise
+    if distrib is None:
+        axe.set_title(title + ' (NO DATA)')
+        return axe
+
+    counts = distrib['counts']
+    bin_limits = distrib['bin_limits']
+    if ylog_scale:
+        axe.set_yscale('log')
+
+    if xlabel:
+        axe.set_xlabel(xlabel)
+    if ylabel:
+        axe.set_ylabel(ylabel)
+    if title:
+        axe.set_title(title)
+
+    if kind == BAR:
+        xvalues = range(len(counts))
+        axe.bar(xvalues, counts)
+
+        # the x axis label
+        xticks_pos = [value + 0.5 for value in xvalues]
+
+        left_val = None
+        right_val = None
+        xticks_labels = []
+        for i, value in enumerate(bin_limits):
+            right_val = value
+            if left_val is not None:
+                xticks_label = (left_val + right_val) / 2.0
+                if xticks_label >= 10:
+                    fmt = '%d'
+                elif xticks_label >= 0.1 and xticks_label < 10:
+                    fmt = '%.1f'
+                elif xticks_label < 0.1:
+                    fmt = '%.1e'
+                xticks_label = fmt % xticks_label
+                xticks_labels.append(xticks_label)
+
+            left_val = right_val
+
+        # we don't want to clutter the plot
+        num_of_xlabels = 15
+        step = int(len(counts) / float(num_of_xlabels))
+        step = 1 if step == 0 else step
+        xticks_pos = xticks_pos[::step]
+        xticks_labels = xticks_labels[::step]
+        axe.set_xticks(xticks_pos)
+        axe.set_xticklabels(xticks_labels, rotation=xtickslabel_rotation)
+    elif kind == LINE:
+        kwargs = {}
+        if distrib_label is not None:
+            kwargs['label'] = distrib_label
+        if linestyle is not None:
+            kwargs['linestyle'] = linestyle
+
+        x_values = []
+        for index, i in enumerate(bin_limits):
+            try:
+                i2 = bin_limits[index + 1]
+            except IndexError:
+                break
+            x_values.append((i + i2) / 2.0)
+        y_values = counts
+        axe.plot(x_values, y_values, **kwargs)
+
+    if ylimits is not None:
+        axe.set_ylim(ylimits)
+    if xlimits is not None:
+        axe.set_xlim(xmin=xlimits[0], xmax=xlimits[1])
+
+    return axe

@@ -2,14 +2,14 @@
 import os
 from pathlib import Path
 import unittest
-import mapping
+import dora.mapping
 from tempfile import NamedTemporaryFile, gettempdir
 from subprocess import run, PIPE
 
-from mapping.bwa import map_with_bwamem, map_mp_bwamem
-from mapping.utils import map_process_to_sortedbam
+from dora.mapping.bwa import map_with_bwamem, map_mp_bwamem
+from dora.mapping.utils import map_process_to_sortedbam
 
-TEST_DATA_PATHDIR = Path(mapping.__file__).parent.parent.joinpath('test').joinpath('data')
+TEST_DATA_PATHDIR = Path(dora.mapping.__file__).parent.parent.joinpath('tests').joinpath('data')
 
 
 class BwaTest(unittest.TestCase):
@@ -22,7 +22,7 @@ class BwaTest(unittest.TestCase):
                                   log_fhand=devnull)
             map_process_to_sortedbam(bwa, bam_fhand.name, stderr_fhand=devnull)
             out = run(['samtools', 'view', bam_fhand.name], stdout=PIPE)
-            assert b'TTCTGATTCAATCTACTTCAAAGTTGGCTTTATCAATAAG' in out.stdout
+            self.assertIn(b'TTCTGATTCAATCTACTTCAAAGTTGGCTTTATCAATAAG', out.stdout)
             bwa.wait()
 
     def test_complete_map_process(self):
@@ -32,13 +32,13 @@ class BwaTest(unittest.TestCase):
             conf['index'] = str(TEST_DATA_PATHDIR.joinpath('arabidopsis_genes'))
             conf['read1_fpath'] = str(TEST_DATA_PATHDIR.joinpath('arabidopsis_reads.fastq'))
             conf['out_fpath'] = out_tmp_fpath
-            conf['sample'] = 'test'
+            conf['sample'] = 'tests'
             conf['do_duplicates'] = True
             conf['do_downgrade_edges'] = False
             result = map_mp_bwamem(conf)
-            assert result == {'fail': False, 'sample': 'test', 'error_msg': 'OK'}
+            self.assertEqual(result, {'fail': False, 'sample': 'tests', 'error_msg': 'OK'})
             out = run(['samtools', 'view', '-h', out_tmp_fpath], stdout=PIPE)
-            assert b'TTCTGATTCAATCTACTTCAAAGTTGGCTTTATCAATAAG' in out.stdout
+            self.assertIn(b'TTCTGATTCAATCTACTTCAAAGTTGGCTTTATCAATAAG', out.stdout)
         finally:
             if os.path.exists(out_tmp_fpath):
                 os.remove(out_tmp_fpath)
@@ -51,13 +51,13 @@ class BwaTest(unittest.TestCase):
             conf['read1_fpath'] = str(TEST_DATA_PATHDIR.joinpath('arabreads_1.fastq'))
             conf['read2_fpath'] = str(TEST_DATA_PATHDIR.joinpath('arabreads_2.fastq'))
             conf['out_fpath'] = out_tmp_fpath
-            conf['sample'] = 'test'
+            conf['sample'] = 'tests'
             conf['do_duplicates'] = False
             conf['do_downgrade_edges'] = False
             result = map_mp_bwamem(conf)
-            assert result == {'fail': False, 'sample': 'test', 'error_msg': 'OK'}
+            self.assertEqual(result, {'fail': False, 'sample': 'tests', 'error_msg': 'OK'})
             out = run(['samtools', 'view', '-h', out_tmp_fpath], stdout=PIPE)
-            assert b'SQ\tSN:AT1G55265.1' in out.stdout
+            self.assertIn(b'SQ\tSN:AT1G55265.1', out.stdout)
         finally:
             if os.path.exists(out_tmp_fpath):
                 os.remove(out_tmp_fpath)
@@ -69,11 +69,11 @@ class BwaTest(unittest.TestCase):
             conf['read1_fpath'] = str(TEST_DATA_PATHDIR.joinpath('arabreads_1.fastq'))
             conf['read2_fpath'] = str(TEST_DATA_PATHDIR.joinpath('arabreads_2.fastq'))
             conf['out_fpath'] = out_tmp_fpath
-            conf['sample'] = 'test'
+            conf['sample'] = 'tests'
             conf['do_duplicates'] = False
             conf['do_downgrade_edges'] = False
             result = map_mp_bwamem(conf)
-            assert result == {'fail': False, 'sample': 'test', 'error_msg': 'OK'}
+            assert result == {'fail': False, 'sample': 'tests', 'error_msg': 'OK'}
             out = run(['samtools', 'view', '-h', out_tmp_fpath], stdout=PIPE)
             assert b'SQ\tSN:AT1G55265.1' in out.stdout
         finally:

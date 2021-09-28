@@ -5,7 +5,7 @@ from collections import Counter
 
 import pysam
 
-from mapping.plot import draw_histogram_in_fhand, BAR
+from dora.plot import draw_histogram_in_fhand, BAR
 
 
 def _setup_argparse():

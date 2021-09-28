@@ -2,8 +2,8 @@
 import sys
 import os
 
-from mapping.utils import generate_bwa_confs_from_project, run_multiprocesses
-from mapping.bwa import map_mp_bwamem
+from dora.mapping.utils import generate_bwa_confs_from_project, run_multiprocesses
+from dora.mapping.bwa import map_mp_bwamem
 
 MARK_DUPLICATES = None
 DOWNGRADE_EDGES = None

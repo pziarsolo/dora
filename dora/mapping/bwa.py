@@ -2,9 +2,9 @@ from pathlib import Path
 from subprocess import PIPE, Popen
 from tempfile import gettempdir, NamedTemporaryFile
 
-from mapping.bam import mark_duplicates, downgrade_read_edges, index_bam
-from mapping.utils import (get_num_threads, map_process_to_sortedbam,
-                           remove_fhand)
+from dora.mapping.bam import mark_duplicates, downgrade_read_edges, index_bam
+from dora.mapping.utils import (get_num_threads, map_process_to_sortedbam,
+                                remove_fhand)
 
 
 def map_mp_bwamem(conf):

@@ -82,7 +82,7 @@ def make_stats_for_sample(in_fhands, stats_fhand, sample=None, min_mapq=None,
         view_cmd.append(in_fhands[0].name)
     view_cmd.append('|')
 
-    stat_cmd = ['samtools', 'stats']
+    stat_cmd = ['samtools', 'stats', '-c', '0,2000,1']
     if rm_dups:
         stat_cmd.append('-d')
     stat_cmd.append('-')
