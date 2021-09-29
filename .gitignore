@@ -1,3 +1,6 @@
 .*project
 *.pyc
 .vscode
+*.pytest_cache/
+venv/*
+.idea*
