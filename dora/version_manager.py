@@ -26,7 +26,7 @@ from pathlib import Path
 class VersionManager:
     # version_fpath = os.path.join(os.path.dirname(os.path.realpath(__file__)), '__version__.py')
     version_path = Path(__file__).parent / '__version__.py'
-    path = Path(__file__).parent.absolute
+    path = Path(__file__).parent.absolute()
 
     def _run_git_command(self, args):
         prefix = ['git', '-C', self.path]
