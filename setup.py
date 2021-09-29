@@ -5,8 +5,10 @@ from setuptools import find_packages
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
-with open('dora/_version.py') as fh:
-    version = fh.read.strip().split('\t')[1].strip()
+exec(open('dora/__version__.py').read())
+
+# with open('dora/__version__.py') as fh:
+#     version = fh.read.strip().split('\t')[1].strip()
 
 requirements = [line.strip() for line in open('requirements.txt')]
 scripts = [str(f) for f in Path('./bin').glob('*.py')]

@@ -17,15 +17,16 @@
 #
 #
 
-import os
+# import os
 import subprocess
+import sys
 from pathlib import Path
 
 
 class VersionManager:
-    # version_fpath = os.path.join(os.path.dirname(os.path.realpath(__file__)), '_version.py')
-    version_path = Path(__file__).parent / '_version.py'
-    path = os.path.dirname(os.path.realpath(__file__))
+    # version_fpath = os.path.join(os.path.dirname(os.path.realpath(__file__)), '__version__.py')
+    version_path = Path(__file__).parent / '__version__.py'
+    path = Path(__file__).parent.absolute
 
     def _run_git_command(self, args):
         prefix = ['git', '-C', self.path]
@@ -41,13 +42,12 @@ class VersionManager:
 
     def get_file_version(self):
         with self.version_path.open() as fhand:
-            version_in_file = fhand.readline().strip().split('=')[1]
-            return version_in_file.strip()
+            return fhand.readline().strip()
 
     @property
     def version(self):
         git_version = self.get_git_version()
-        file_version = self.get_git_version()
+        file_version = self.get_file_version()
         if git_version != file_version:
             self.version = git_version
         return git_version
@@ -55,7 +55,7 @@ class VersionManager:
     @version.setter
     def version(self, new_version):
         with open(self.version_path, 'w') as fhand:
-            fhand.write(f'version={new_version}\n')
+            fhand.write(f'{new_version}\n')
             fhand.flush()
 
     def update_version(self, pre_commit=True):
@@ -73,8 +73,6 @@ class VersionManager:
 
 
 if __name__ == '__main__':
-    import sys
-
     if sys.argv[1] == 'update_version':
         manager = VersionManager()
         manager.update_version(pre_commit=True)
