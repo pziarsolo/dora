@@ -1,1 +1,1 @@
-version=.2.dev2
+version=0.2-2-gaa0a377.dirty
