@@ -1,9 +1,10 @@
-from pysam import index, AlignmentFile
-from array import array
-from tempfile import NamedTemporaryFile
-import subprocess
-from subprocess import CalledProcessError
 import shutil
+import subprocess
+from array import array
+from subprocess import CalledProcessError
+from tempfile import NamedTemporaryFile
+
+from pysam import index, AlignmentFile
 
 LEFT_DOWNGRADED_TAG = 'dl'
 RIGTH_DOWNGRADED_TAG = 'dr'
@@ -86,7 +87,6 @@ def _downgrade_edge_qualities(aligned_read, read_start_size, read_end_size,
 
 
 def _restore_qual_from_tag(aligned_read):
-
     def to_phred_qual(quals):
         return [ord(qual) - 33 for qual in quals]
 
@@ -134,10 +134,10 @@ def _mark_duplicates(in_fpath, out_fpath, metric_fpath, stderr_fhand):
     if metric_fpath is None:
         metric_fpath = '/dev/null'
 
-    cmd = ['picard-tools', 'MarkDuplicates', 'VALIDATION_STRINGENCY=LENIENT',
+    cmd = ['PicardCommandLine', 'MarkDuplicates', 'VALIDATION_STRINGENCY=LENIENT',
            'M={}'.format(metric_fpath), 'INPUT={}'.format(in_fpath),
            'OUTPUT={}'.format(out_fpath)]
-#     cmd = ['samtools', 'markdup', in_fpath, out_fpath]
+    #     cmd = ['samtools', 'markdup', in_fpath, out_fpath]
     failed = False
     try:
         subprocess.run(cmd, stderr=stderr_fhand, stdout=stderr_fhand)
