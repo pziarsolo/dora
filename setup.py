@@ -7,15 +7,15 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 exec(open('dora/__version__.py').read())
 
-# with open('dora/__version__.py') as fh:
-#     version = fh.read.strip().split('\t')[1].strip()
+with open('dora/__version__.py') as fh:
+    version = fh.readline().strip()
 
 requirements = [line.strip() for line in open('requirements.txt')]
 scripts = [str(f) for f in Path('./bin').glob('*.py')]
 
 setuptools.setup(
     name="dora",
-    version="0.1",
+    version=version,
     author="Peio Ziarsolo",
     author_email="pziarsolo@gmail.com",
     description="Small utilities to deal with NGS Seq mapping",
