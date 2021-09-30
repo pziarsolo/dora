@@ -64,8 +64,9 @@ class VersionManager:
 
         if pre_commit:
             git_version = items[0]
-            commit_num = int(items[1]) + 1
-            git_version += f'.dev{commit_num}'
+            if len(items) > 1:
+                commit_num = int(items[1]) + 1
+                git_version += f'.dev{commit_num}'
         else:
             git_version = git_version.replace('-', '.dev', 1).replace('-', '+')[1:]
         self.version = git_version
