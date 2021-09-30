@@ -3,19 +3,17 @@ from pathlib import Path
 import setuptools
 from setuptools import find_packages
 
+from dora import VersionManager
+
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
-exec(open('dora/__version__.py').read())
-
-with open('dora/__version__.py') as fh:
-    version = fh.readline().strip()
 
 requirements = [line.strip() for line in open('requirements.txt')]
 scripts = [str(f) for f in Path('./bin').glob('*.py')]
 
 setuptools.setup(
     name="dora",
-    version=version,
+    version=VersionManager().get_file_version(),
     author="Peio Ziarsolo",
     author_email="pziarsolo@gmail.com",
     description="Small utilities to deal with NGS Seq mapping",
