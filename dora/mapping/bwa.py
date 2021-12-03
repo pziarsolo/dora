@@ -9,6 +9,7 @@ from dora.mapping.utils import (get_num_threads, map_process_to_sortedbam,
 
 def map_mp_bwamem(conf):
     sample = conf.get('sample')
+    bwa_extra_paramas = conf.get('bwa_params', [])
     library = conf.get('library', sample)
     read_group = conf.get('read_group', library)
     read1_path = Path(conf.get('read1_fpath'))
@@ -157,6 +158,6 @@ def map_with_bwamem(index_fpath, unpaired_path=None, paired_paths=None,
     cmd = [binary, 'mem', '-t', str(get_num_threads(threads)), index_fpath]
     cmd.extend(extra_params)
     cmd.extend(map(str, in_paths))
-#     print(' '.join(cmd))
+    #     print(' '.join(cmd))
     bwa = Popen(cmd, stderr=log_fhand, stdout=PIPE)
     return bwa

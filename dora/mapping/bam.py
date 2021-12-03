@@ -30,13 +30,13 @@ def downgrade_read_edges(in_fpath, out_fpath, read_start_size, read_end_size,
                 aligned_read.has_tag(RIGTH_DOWNGRADED_TAG)):
             raise RuntimeError('Edge qualities already downgraded\n')
 
-        _downgrade_edge_qualities(aligned_read, read_start_size, read_end_size,
-                                  qual_to_substract=qual_to_substract)
+        downgrade_edge_qualities(aligned_read, read_start_size, read_end_size,
+                                 qual_to_substract=qual_to_substract)
         out_sam.write(aligned_read)
 
 
-def _downgrade_edge_qualities(aligned_read, read_start_size, read_end_size,
-                              qual_to_substract):
+def downgrade_edge_qualities(aligned_read, read_start_size, read_end_size,
+                             qual_to_substract):
     is_reversed = bool(aligned_read.flag & 16)
     if is_reversed:
         right_limit = aligned_read.query_alignment_end - read_start_size

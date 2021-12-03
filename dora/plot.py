@@ -155,7 +155,6 @@ class HistogramPlotter(object):
         counter_index = 0
         axes = []
         for plot_num in range(1, self.num_plots + 1):
-            print(self.num_rows, self.num_cols, plot_num)
             axe = self.figure.add_subplot(self.num_rows, self.num_cols,
                                           plot_num)
             for _ in range(self.plots_per_chart):
@@ -183,7 +182,6 @@ class HistogramPlotter(object):
             if distrib_labels is not None:
                 axe.legend()
             axes.append(axe)
-        print(len(axes))
         return axes
 
 
@@ -202,32 +200,32 @@ def draw_histogram_in_fhand(counter, fhand, title=None, xlabel=None, xmin=None,
 
 def calculate_distribution(counter, bins=None, min_=None, max_=None,
                            outlier_threshold=None):
-        'It returns an histogram with the given range and bin'
+    'It returns an histogram with the given range and bin'
 
-        distrib = []
-        min_, max_ = _calculate_dist_range(counter, min_, max_, outlier_threshold)
+    distrib = []
+    min_, max_ = _calculate_dist_range(counter, min_, max_, outlier_threshold)
 
-        if min_ is None or max_ is None:
-            return None
-        bin_edges = calculate_bin_edges(counter, min_, max_, bins)
-        for bin_index, left_edge in enumerate(bin_edges):
-            try:
-                rigth_edge = bin_edges[bin_index + 1]
-            except IndexError:
+    if min_ is None or max_ is None:
+        return None
+    bin_edges = calculate_bin_edges(counter, min_, max_, bins)
+    for bin_index, left_edge in enumerate(bin_edges):
+        try:
+            rigth_edge = bin_edges[bin_index + 1]
+        except IndexError:
+            break
+        sum_values = 0
+
+        for index2 in sorted(counter.keys()):
+            value = counter[index2]
+            if index2 > rigth_edge:
                 break
-            sum_values = 0
 
-            for index2 in sorted(counter.keys()):
-                value = counter[index2]
-                if index2 > rigth_edge:
-                    break
+            elif (left_edge <= index2 and index2 < rigth_edge or
+                  left_edge <= index2 and index2 == max_):
+                sum_values += value
 
-                elif (left_edge <= index2 and index2 < rigth_edge or
-                      left_edge <= index2 and index2 == max_):
-                    sum_values += value
-
-            distrib.append(sum_values)
-        return {'counts': distrib, 'bin_limits': bin_edges}
+        distrib.append(sum_values)
+    return {'counts': distrib, 'bin_limits': bin_edges}
 
 
 def _calculate_dist_range(counter, min_, max_, outlier_threshold):
@@ -256,17 +254,17 @@ def _calculate_dist_range(counter, min_, max_, outlier_threshold):
 
 
 def _get_value_for_index(counter, position):
-        '''It takes a position and it returns the value for the given index'''
-        cum_count = 0
-        for index in sorted(counter.keys()):
-            count = counter[index]
-            cum_count += count
-            if position <= cum_count - 1:
-                return index
-        else:
-            if position >= cum_count:
-                raise IndexError('You asked for an index beyond the scope')
+    '''It takes a position and it returns the value for the given index'''
+    cum_count = 0
+    for index in sorted(counter.keys()):
+        count = counter[index]
+        cum_count += count
+        if position <= cum_count - 1:
             return index
+    else:
+        if position >= cum_count:
+            raise IndexError('You asked for an index beyond the scope')
+        return index
 
 
 def calculate_bin_edges(counter, min_, max_, n_bins=None):
