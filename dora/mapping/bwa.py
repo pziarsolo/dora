@@ -25,7 +25,10 @@ def map_mp_bwamem(conf):
     do_downgrade_edges = conf.get('do_downgrade_edges', True)
     downgrade_edges_conf = conf.get('downgrade_edges_conf', None)
     do_csi_index = conf.get('do_csi_index', False)
+    log_fhand = conf.get('log_fhand', None)
 
+    if log_fhand is None:
+        log_fhand = open(str(out_path.with_suffix('.stderr')), 'w')
     Path(tempdir).mkdir(exist_ok=True)
 
     if not read1_path.exists():
@@ -41,9 +44,9 @@ def map_mp_bwamem(conf):
     readgroup = {'ID': read_group, 'LB': library, 'SM': sample,
                  'PL': 'illumina'}
 
-    stderr_fhand = open(str(out_path.with_suffix('.stderr')), 'w')
+
     bwa_conf = {'index_fpath': bwa_index, 'threads': threads,
-                'readgroup': readgroup, 'log_fhand': stderr_fhand}
+                'readgroup': readgroup, 'log_fhand': log_fhand}
     if read2_path and read2_path.exists():
         bwa_conf['paired_paths'] = [read1_path, read2_path]
     elif interleave:
@@ -67,7 +70,7 @@ def map_mp_bwamem(conf):
     bwa_process = map_with_bwamem(**bwa_conf)
     try:
         map_process_to_sortedbam(bwa_process, bam_fhand.name,
-                                 stderr_fhand=stderr_fhand,
+                                 stderr_fhand=log_fhand,
                                  tempdir=tempdir)
     except RuntimeError:
         msg = '{}: error mapping'.format(library)
@@ -86,7 +89,7 @@ def map_mp_bwamem(conf):
         else:
             dup_fhand = out_path.open('w')
         try:
-            mark_duplicates(out_fhand.name, dup_fhand.name, stderr_fhand=stderr_fhand)
+            mark_duplicates(out_fhand.name, dup_fhand.name, stderr_fhand=log_fhand)
         except RuntimeError:
             msg = '{}: error marking duplicates\n'.format(sample)
             # sys.stderr.write(msg)
@@ -107,7 +110,7 @@ def map_mp_bwamem(conf):
         used_fhands.append(downgrade_fhand)
 
     index_bam(out_fhand.name, do_csi_index=do_csi_index)
-    stderr_fhand.close()
+    log_fhand.close()
     for fhand in used_fhands:
         if fhand.name != out_fhand.name:
             remove_fhand(fhand)

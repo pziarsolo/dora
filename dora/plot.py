@@ -142,7 +142,7 @@ class HistogramPlotter(object):
                     break
                 x_values.append((i + i2) / 2.0)
             y_values = counts
-            axe.plot(x_values, y_values, **kwargs)
+            axe.plot(x_values, y_values, color='red', **kwargs)
 
         if ylimits is not None:
             axe.set_ylim(ylimits)

@@ -7,8 +7,8 @@ from dora.plot import draw_histogram_in_fhand
 from dora.stats import calc_coverage_stats, write_coverage_stats
 
 
-HEADER = ['Sample', 'Min', 'Max', 'Mean', 'Std. DEV', 'Median', 'Bases Covered',
-          'Bases uncovered', 'Uniformity of Coverage (Pct > 0.2*mean)',
+HEADER = ['Sample', 'Min', 'Max', 'Average depth', 'Std. DEV', 'Median', 'Bases Covered',
+          'Bases uncovered', 'GB of mapped reads', 'Uniformity of Coverage (Pct > 0.2*mean)',
           'Uniformity of Coverage (Pct > 0.5*mean)']
 
 
@@ -90,10 +90,11 @@ def main():
                 f"{stats['median']:.2f}",
                 str(stats['bases_covered']),
                 str(stats['bases_uncovered']),
+                str(int(stats['mean'] * stats['bases_covered']))
                 f"{stats['uniformity_coverage_pct0.2']:.2f}",
                 f"{stats['uniformity_coverage_pct0.5']:.2f}"]
-
-            items.extend(str(v) for v in stats['range_covs'].values())
+            total_bases = stats['bases_covered'] + stats['bases_uncovered']
+            items.extend(f'{(v/total_bases):.2f}' for v in stats['range_covs'].values())
             out_fhand.write('\t'.join(items)+ '\n')
 
 
