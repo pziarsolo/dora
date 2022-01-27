@@ -5,6 +5,7 @@ pip install path_to_package
 
 Binaries
 --------
+do_bwa_mapping.py
 
 do_bam_stats.py
 
