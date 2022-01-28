@@ -11,9 +11,14 @@ with open("README.md", "r", encoding="utf-8") as fh:
 requirements = [line.strip() for line in open('requirements.txt')]
 scripts = [str(f) for f in Path('./bin').glob('*.py')]
 
+version_path = Path(__file__).parent / '__version__.py'
+
+with version_path.open() as fhand:
+    version = fhand.readline().strip()
+
 setuptools.setup(
     name="dora",
-    version=VersionManager().get_file_version(),
+    version=version,
     author="Peio Ziarsolo",
     author_email="pziarsolo@gmail.com",
     description="Small utilities to deal with NGS Seq mapping",
