@@ -11,7 +11,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 requirements = [line.strip() for line in open('requirements.txt')]
 scripts = [str(f) for f in Path('./bin').glob('*.py')]
 
-version_path = Path(__file__).parent / '__version__.py'
+version_path = Path(__file__).parent / 'dora' / '__version__.py'
 
 with version_path.open() as fhand:
     version = fhand.readline().strip()
