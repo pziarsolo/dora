@@ -90,7 +90,7 @@ def main():
                 f"{stats['median']:.2f}",
                 str(stats['bases_covered']),
                 str(stats['bases_uncovered']),
-                str(int(stats['mean'] * stats['bases_covered']))
+                str(int(stats['mean'] * stats['bases_covered'])),
                 f"{stats['uniformity_coverage_pct0.2']:.2f}",
                 f"{stats['uniformity_coverage_pct0.5']:.2f}"]
             total_bases = stats['bases_covered'] + stats['bases_uncovered']
