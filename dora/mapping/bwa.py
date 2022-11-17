@@ -94,7 +94,7 @@ def map_mp_bwamem(conf):
             supplememtary_fhand = NamedTemporaryFile(suffix='.supplementary.bam', dir=tempdir)
         else:
             supplememtary_fhand = out_path.open('w')
-        flag = '123'
+        flag = '2048'
         try:
             filter_bam_by_flagstat(out_fhand.name, flag,
                                    out_fpath=supplememtary_fhand.name, tmp_dir=None,
