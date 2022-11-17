@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 'It draws a histogram with the coverage of a bam file'
 

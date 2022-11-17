@@ -80,6 +80,14 @@ class BwaTest(unittest.TestCase):
             if os.path.exists(out_tmp_fpath):
                 os.remove(out_tmp_fpath)
 
+    def test_map_with_bwa_extra_conf(self):
+        index_fpath = str(TEST_DATA_PATHDIR.joinpath('arabidopsis_genes'))
+        reads_path = TEST_DATA_PATHDIR.joinpath('arabidopsis_reads.fastq')
+        with NamedTemporaryFile(suffix='.bam') as bam_fhand, open(os.devnull, 'w') as devnull:
+            conf = {'read1_fpath': reads_path, 'bwa_index': index_fpath,
+                    'sample': 'test', 'out_path': bam_fhand.name}
+            map_mp_bwamem(conf)
+
 
 if __name__ == '__main__':
     # import sys;sys.argv = ['', 'Bowtie2Test.test_map_with_bowtie2']

@@ -2,7 +2,8 @@ from pathlib import Path
 from subprocess import PIPE, Popen
 from tempfile import gettempdir, NamedTemporaryFile
 
-from dora.mapping.bam import mark_duplicates, downgrade_read_edges, index_bam
+from dora.mapping.bam import (mark_duplicates, downgrade_read_edges, index_bam,
+                              filter_bam_by_flagstat)
 from dora.mapping.utils import (get_num_threads, map_process_to_sortedbam,
                                 remove_fhand)
 
@@ -26,6 +27,7 @@ def map_mp_bwamem(conf):
     downgrade_edges_conf = conf.get('downgrade_edges_conf', None)
     do_csi_index = conf.get('do_csi_index', False)
     log_fhand = conf.get('log_fhand', None)
+    filter_supplementary = conf.get('filter_supplementary', False)
 
     if log_fhand is None:
         log_fhand = open(str(out_path.with_suffix('.stderr')), 'w')
@@ -54,16 +56,20 @@ def map_mp_bwamem(conf):
     else:
         bwa_conf['unpaired_path'] = read1_path
 
-    duplicates_out_is_tmp = True
-    map_out_is_tmp = True
+
     used_fhands = []
+    final_analysis = None
 
-    if not do_downgrade_edges and do_duplicates:
-        duplicates_out_is_tmp = False
-    elif not do_downgrade_edges and not do_duplicates:
-        map_out_is_tmp = False
+    if do_downgrade_edges:
+        final_analysis = 'downgrade_edges'
+    elif not do_downgrade_edges and do_duplicates:
+        final_analysis = 'duplicates'
+    elif not do_downgrade_edges and not do_duplicates and filter_supplementary:
+        final_analysis = 'filter_supplementary'
+    else:
+        final_analysis = 'mapping'
 
-    if map_out_is_tmp:
+    if final_analysis != 'mapping':
         bam_fhand = NamedTemporaryFile(suffix='.bwa.bam', dir=tempdir)
     else:
         bam_fhand = out_path.open('w')
@@ -83,8 +89,25 @@ def map_mp_bwamem(conf):
 
     used_fhands.append(bam_fhand)
 
+    if filter_supplementary:
+        if final_analysis != 'filter_supplementary':
+            supplememtary_fhand = NamedTemporaryFile(suffix='.supplementary.bam', dir=tempdir)
+        else:
+            supplememtary_fhand = out_path.open('w')
+        flag = '123'
+        try:
+            filter_bam_by_flagstat(out_fhand.name, flag,
+                                   out_fpath=supplememtary_fhand.name, tmp_dir=None,
+                                   stderr_fhand=log_fhand)
+        except Exception as error:
+            print(error)
+            raise
+        out_fhand = supplememtary_fhand
+        used_fhands.append(supplememtary_fhand)
+
+
     if do_duplicates:
-        if duplicates_out_is_tmp:
+        if final_analysis != 'duplicates':
             dup_fhand = NamedTemporaryFile(suffix='.dup.bam', dir=tempdir)
         else:
             dup_fhand = out_path.open('w')

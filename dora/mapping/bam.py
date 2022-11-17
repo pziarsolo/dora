@@ -144,3 +144,37 @@ def _mark_duplicates(in_fpath, out_fpath, metric_fpath, stderr_fhand):
     except CalledProcessError:
         failed = True
     return failed
+
+
+def filter_bam_by_flagstat(in_fpath, flag, out_fpath=None, tmp_dir=None,
+                           stderr_fhand=None):
+
+    if out_fpath is None:
+        out_fpath = in_fpath
+
+    if out_fpath == in_fpath:
+        tmp_fhand = NamedTemporaryFile(suffix='.filtered.bam',
+                                       delete=False, dir=tmp_dir)
+        temp_out_fpath = tmp_fhand.name
+    else:
+        temp_out_fpath = out_fpath
+
+    failed = _filter_bam_by_flagstat(in_fpath, temp_out_fpath, flag,
+                                     stderr_fhand=stderr_fhand)
+
+    if failed:
+        msg = 'Filter bam process failed, for {}'
+        raise RuntimeError(msg.format(in_fpath))
+
+    if temp_out_fpath != out_fpath:
+        shutil.move(temp_out_fpath, out_fpath)
+
+
+def _filter_bam_by_flagstat(in_fpath, out_fpath, flag, stderr_fhand):
+    cmd = ['samtools', 'view', '-b', '-F', str(flag), in_fpath, '-o', out_fpath]
+    failed = False
+    try:
+        subprocess.run(cmd, stderr=stderr_fhand, stdout=stderr_fhand)
+    except CalledProcessError:
+        failed = True
+    return failed

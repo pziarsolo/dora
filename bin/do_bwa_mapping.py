@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import argparse
 import sys
 from dora.mapping.bwa import map_mp_bwamem
@@ -25,7 +25,9 @@ def _setup_argparse():
                         action='store_true')
     parser.add_argument('-c', '--downgrade_edges_conf', nargs=2, type=int,
                         help='Read start and end edges sizes to downgrade')
-
+    parser.add_argument('-f', '--filter_supplementary',
+                        help='Filter out supplementary reads',
+                        action='store_true')
     return parser
 
 
@@ -54,6 +56,7 @@ def _parse_args(parser):
     conf['threads'] = parsed_args.threads
     conf['do_duplicates'] = parsed_args.do_duplicates
     conf['do_downgrade_edges'] = parsed_args.do_downgrade_edges
+    conf['filter_supplementary'] = parsed_args.filter_supplementary
     if parsed_args.do_downgrade_edges:
         start, end = parsed_args.downgrade_edges_conf
         downgrade_edges_conf = {'read_start_size': start, 'read_end_size': end}
